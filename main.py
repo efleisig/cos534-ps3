@@ -1,6 +1,8 @@
 import io
 import os
 import csv
+import matplotlib.pyplot as plt
+import numpy as np
 
 from google.cloud import vision
 
@@ -76,11 +78,48 @@ def get_top_labels():
     ordered_f = sorted(f_counts.items(), key=lambda item: item[1])
     ordered_m = sorted(m_counts.items(), key=lambda item: item[1])
     total_f = sum(value == "Female" for value in gender_dict.values())
-    print(ordered_f)
     total_m = len(gender_dict) - total_f
-    ordered_f = [(label, i/total_f*100) for label, i in ordered_f]
-    ordered_m = [(label, i/total_m*100) for label, i in ordered_m]
-    print(ordered_f)
+    top_f = [(label, i/total_f*100) for label, i in ordered_f][-25:]
+    top_m = [(label, i/total_m*100) for label, i in ordered_m][-25:]
+
+    # Get occurrences of gender A's top labels in gender B
+    print(top_f)
+    for index, label in enumerate(top_f):
+        m_count = 0
+        if label[0] in m_counts:
+            m_count = m_counts[label[0]]/total_m*100
+        top_f[index] = [label[0], label[1], m_count]
+
+    for index, label in enumerate(top_m):
+        f_count = 0
+        if label[0] in f_counts:
+            f_count = f_counts[label[0]]/total_f*100
+        top_m[index] = [label[0], label[1], f_count]
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(top_f))
+    width = 0.35
+    rects1 = ax.barh(x - width / 2, [r[1] for r in top_f], width, label='Women')
+    rects2 = ax.barh(x + width / 2, [r[2] for r in top_f], width, label='Men')
+    ax.set_xlabel('% receiving each label')
+    ax.set_title('Top labels for images of women')
+    ax.set_yticks(x)
+    ax.set_yticklabels([r[0] for r in top_f])
+    ax.legend()
+    plt.show()
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(top_m))
+    width = 0.35
+    rects1 = ax.barh(x - width / 2, [r[1] for r in top_m], width, label='Women')
+    rects2 = ax.barh(x + width / 2, [r[2] for r in top_m], width, label='Men')
+    ax.set_xlabel('% receiving each label')
+    ax.set_title('Top labels for images of men')
+    ax.set_yticks(x)
+    ax.set_yticklabels([r[0] for r in top_m])
+    ax.legend()
+    plt.show()
+
 
 
 
