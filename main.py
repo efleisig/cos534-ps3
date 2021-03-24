@@ -79,8 +79,8 @@ def get_top_labels():
     ordered_m = sorted(m_counts.items(), key=lambda item: item[1])
     total_f = sum(value == "Female" for value in gender_dict.values())
     total_m = len(gender_dict) - total_f
-    top_f = [(label, i/total_f*100) for label, i in ordered_f][-25:]
-    top_m = [(label, i/total_m*100) for label, i in ordered_m][-25:]
+    top_f = [(label, i/total_f*100) for label, i in ordered_f][-25:]        # This should actually be ordered by
+    top_m = [(label, i/total_m*100) for label, i in ordered_m][-25:]        # chi-squared test (todo)
 
     # Get occurrences of gender A's top labels in gender B
     print(top_f)
