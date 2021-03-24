@@ -40,34 +40,48 @@ def get_congress_labels():
             tsv_writer.writerow([f, ", ".join(descriptions), ", ".join(scores)])
 
 def get_top_labels():
+    import unidecode                    # Needs to be installed first (pip install unidecode)
+
     gender_dict = {}
-    with open('mc_data.tsv', 'wt') as in_file:
+    with open('mc_data.tsv', 'rt') as in_file:
         tsv_reader = csv.reader(in_file, delimiter='\t')
+        next(tsv_reader)
         for row in tsv_reader:
-            gender_dict[row[9][9:]] = row[2]
+            gender_dict[unidecode.unidecode(row[9][10:])] = row[2] # Avoid accent/tilde issues
 
     print(gender_dict)
 
-
     f_counts = {}
     m_counts = {}
-    with open('mc_data_replicated.tsv', 'wt') as in_file:
+    with open('mc_data_replicated.tsv', 'rt') as in_file:
         tsv_reader = csv.reader(in_file, delimiter='\t')
+        next(tsv_reader)
         for row in tsv_reader:
-            image = row[0]
-            labels = row[1].split()
+            image = unidecode.unidecode(row[0])
+            labels = row[1].split(",")
             gender = gender_dict[image]
             for label in labels:
+                label = label.strip()
                 if gender == "Male":
                     if label in m_counts:
                         m_counts[label] += 1
                     else:
-                        m_counts[label] == 1
+                        m_counts[label] = 1
                 else:
                     if label in f_counts:
                         f_counts[label] += 1
                     else:
-                        f_counts[label] == 1
+                        f_counts[label] = 1
+
+    ordered_f = sorted(f_counts.items(), key=lambda item: item[1])
+    ordered_m = sorted(m_counts.items(), key=lambda item: item[1])
+    total_f = sum(value == "Female" for value in gender_dict.values())
+    print(ordered_f)
+    total_m = len(gender_dict) - total_f
+    ordered_f = [(label, i/total_f*100) for label, i in ordered_f]
+    ordered_m = [(label, i/total_m*100) for label, i in ordered_m]
+    print(ordered_f)
+
 
 
 
