@@ -3,6 +3,7 @@ import os
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import unidecode  # Needs to be installed first (pip install unidecode)
 
 from google.cloud import vision
 
@@ -48,23 +49,27 @@ def get_congress_labels():
     all_labels_flat = set([elem for pic in all_labels for elem in pic])
     print(all_labels_flat)
 
-def get_top_labels():
-    import unidecode                    # Needs to be installed first (pip install unidecode)
-
+# helper function for mapping individuals to genders (used in 4B and 4C)
+def get_genders():
     gender_dict = {}
     with open('mc_data.tsv', 'rt') as in_file:
         tsv_reader = csv.reader(in_file, delimiter='\t')
         next(tsv_reader)
         for row in tsv_reader:
-            gender_dict[unidecode.unidecode(row[9][10:])] = row[2] # Avoid accent/tilde issues
+            # Avoid accent/tilde issues
+            gender_dict[unidecode.unidecode(row[9][10:])] = row[2]
+    
+    return gender_dict
 
+def get_top_labels():               
+    gender_dict = get_genders()
     print(gender_dict)
 
     f_counts = {}
     m_counts = {}
     with open('mc_data_replicated.tsv', 'rt') as in_file:
         tsv_reader = csv.reader(in_file, delimiter='\t')
-        next(tsv_reader)
+        next(tsv_reader) # skip the first row, which has headings
         for row in tsv_reader:
             image = unidecode.unidecode(row[0])
             labels = row[1].split(",")
@@ -127,6 +132,54 @@ def get_top_labels():
     ax.legend()
     plt.show()
 
+# Part 4C
+def get_category_means():
+    # map all labels to categories
+    labels_cats = {}
+    with open('labels_categories.csv', 'rt', encoding='utf-8-sig') as in_file:
+        for row in csv.reader(in_file):
+            labels_cats[row[0].strip()] = row[1]
+
+    # determine who is which gender
+    gender_dict = get_genders()
+
+    # get total counts for each category, then can just divide by the number of people
+    m_counts = {} 
+    f_counts = {} 
+    categories = ['physicaltrait_body', 'clothing_apparel', 'color_adjective', 'occupation', 'other']
+    for category in categories:
+        m_counts[category] = 0
+        f_counts[category] = 0
+
+    with open('mc_data_replicated.tsv', 'rt') as in_file:
+        tsv_reader = csv.reader(in_file, delimiter='\t')
+        next(tsv_reader) # skip the first row, which has headings
+        for row in tsv_reader:
+            image = unidecode.unidecode(row[0])
+            labels = row[1].split(",")
+            gender = gender_dict[image]
+            for label in labels:
+                label = label.strip().lower()
+                category = labels_cats[label]
+                if gender == "Male":
+                    m_counts[category] += 1
+                else:
+                    f_counts[category] += 1
+        
+        print(m_counts)
+        print(f_counts)
+
+        # get the mean counts
+        total_m = sum(x == 'Male' for x in gender_dict.values())
+        total_f = sum(x == 'Female' for x in gender_dict.values())
+
+        mean_m_counts = {k: v / total_m for k, v in m_counts.items()}
+        mean_f_counts = {k: v / total_f for k, v in f_counts.items()}
+
+        print("Male: " + str(mean_m_counts))
+        print("Female: " + str(mean_f_counts))
+
+
 
 
 
@@ -134,4 +187,5 @@ def get_top_labels():
 if __name__ == '__main__':
     #get_congress_labels()
     get_top_labels()
+    # get_category_means()
 
