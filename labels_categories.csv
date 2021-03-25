@@ -1,0 +1,117 @@
+﻿ arm,physicaltrait_body
+ bangs,physicaltrait_body
+ beard,physicaltrait_body
+ beauty,physicaltrait_body
+ blazer,clothing_apparel
+ blond,physicaltrait_body
+ blue,color_adjective
+ body jewelry,clothing_apparel
+ book,other
+ bookcase,other
+ bow tie,clothing_apparel
+ building,other
+ button,clothing_apparel
+ cheek,physicaltrait_body
+ chest,physicaltrait_body
+ chin,physicaltrait_body
+ clothing,clothing_apparel
+ cloud,other
+ coat,clothing_apparel
+ collar,clothing_apparel
+ comb over,physicaltrait_body
+ cosmetic dentistry,occupation
+ costume hat,clothing_apparel
+ curtain,other
+ daytime,other
+ dress shirt,clothing_apparel
+ earrings,clothing_apparel
+ electric blue,color_adjective
+ embellishment,other
+ event,other
+ eye,physicaltrait_body
+ eyebrow,physicaltrait_body
+ eyelash,physicaltrait_body
+ eyewear,clothing_apparel
+ face,physicaltrait_body
+ facial expression,physicaltrait_body
+ fashion design,occupation
+ flag,other
+ flag day (usa),other
+ flag of the united states,other
+ flash photography,other
+ forehead,physicaltrait_body
+ formal wear,clothing_apparel
+ gas,other
+ gesture,other
+ glasses,clothing_apparel
+ government agency,other
+ hair,physicaltrait_body
+ hairstyle,physicaltrait_body
+ happy,color_adjective
+ hat,clothing_apparel
+ head,physicaltrait_body
+ human,color_adjective
+ human body,physicaltrait_body
+ infrastructure,other
+ iris,physicaltrait_body
+ jaw,physicaltrait_body
+ jewellery,clothing_apparel
+ jheri curl,physicaltrait_body
+ layered hair,physicaltrait_body
+ lip,physicaltrait_body
+ lipstick,clothing_apparel
+ long hair,physicaltrait_body
+ magenta,color_adjective
+ makeover,other
+ mammal,other
+ material property,other
+ microphone,other
+ military officer,occupation
+ military person,occupation
+ natural environment,other
+ neck,physicaltrait_body
+ necklace,clothing_apparel
+ nose,physicaltrait_body
+ official,occupation
+ outerwear,clothing_apparel
+ pantsuit,clothing_apparel
+ people,other
+ photograph,other
+ picture frame,other
+ plant,other
+ pleased,color_adjective
+ property,other
+ publication,other
+ red,color_adjective
+ ringlet,physicaltrait_body
+ shelf,other
+ shelving,other
+ shirt,clothing_apparel
+ shoulder,physicaltrait_body
+ skin,physicaltrait_body
+ sky,other
+ sleeve,clothing_apparel
+ smile,physicaltrait_body
+ spokesperson,occupation
+ standing,color_adjective
+ street fashion,clothing_apparel
+ suit,clothing_apparel
+ suit trousers,clothing_apparel
+ sun hat,clothing_apparel
+ table,other
+ television presenter,occupation
+ throat,physicaltrait_body
+ tie,clothing_apparel
+ tree,other
+ uniform,clothing_apparel
+ vertebrate,physicaltrait_body
+ vision care,occupation
+ waist,physicaltrait_body
+ watch,clothing_apparel
+ white,color_adjective
+ white-collar worker,occupation
+ window,other
+ wings,physicaltrait_body
+ wood,other
+ wrinkle,physicaltrait_body
+organ,physicaltrait_body

@@ -27,19 +27,26 @@ def get_labels(image_fpath):
 
 def get_congress_labels():
     image_folder = "mc_images/"
+    all_labels = []
     with open('mc_data_replicated.tsv', 'wt') as out_file:
         tsv_writer = csv.writer(out_file, delimiter='\t')
         tsv_writer.writerow(["wiki_img_url", "wiki_img_labels", "wiki_img_labelsconf"])
         for f in os.listdir(image_folder):
             labels = get_labels(image_folder + f)
+            # print(labels)
 
             descriptions = []
             scores = []
             for label in labels:
                 descriptions.append(label.description)
                 scores.append(str(label.score))
+            all_labels.append(descriptions)
 
             tsv_writer.writerow([f, ", ".join(descriptions), ", ".join(scores)])
+    
+    # get set of unique labels for problem 
+    all_labels_flat = set([elem for pic in all_labels for elem in pic])
+    print(all_labels_flat)
 
 def get_top_labels():
     import unidecode                    # Needs to be installed first (pip install unidecode)
