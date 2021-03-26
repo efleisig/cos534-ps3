@@ -3,8 +3,9 @@ import os
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-import unidecode  # Needs to be installed first (pip install unidecode)
+from scipy.stats import chisquare
 
+import unidecode  # Needs to be installed first (pip install unidecode)
 from google.cloud import vision
 
 def get_labels(image_fpath):
@@ -61,6 +62,7 @@ def get_genders():
     
     return gender_dict
 
+# Part 4B
 def get_top_labels():               
     gender_dict = get_genders()
     print(gender_dict)
@@ -87,26 +89,37 @@ def get_top_labels():
                     else:
                         f_counts[label] = 1
 
-    ordered_f = sorted(f_counts.items(), key=lambda item: item[1])
-    ordered_m = sorted(m_counts.items(), key=lambda item: item[1])
+    ordered_f = [f for f in f_counts.items() if f[1] >= 5]  # Only consider labels used at least 5 times
+    ordered_m = [m for m in m_counts.items() if m[1] >= 5]  # (as done in the paper)
+
     total_f = sum(value == "Female" for value in gender_dict.values())
     total_m = len(gender_dict) - total_f
-    top_f = [(label, i/total_f*100) for label, i in ordered_f][-25:]        # This should actually be ordered by
-    top_m = [(label, i/total_m*100) for label, i in ordered_m][-25:]        # chi-squared test (todo)
+    top_f = [(label, i/total_f*100) for label, i in ordered_f]
+    top_m = [(label, i/total_m*100) for label, i in ordered_m]
 
     # Get occurrences of gender A's top labels in gender B
-    print(top_f)
     for index, label in enumerate(top_f):
-        m_count = 0
+        m_prob = 0
         if label[0] in m_counts:
-            m_count = m_counts[label[0]]/total_m*100
-        top_f[index] = [label[0], label[1], m_count]
+            m_prob = m_counts[label[0]]/total_m*100
+
+        chi2, p = chisquare([label[1], m_prob])
+        top_f[index] = [label[0], label[1], m_prob, chi2]
 
     for index, label in enumerate(top_m):
-        f_count = 0
+        f_prob = 0
         if label[0] in f_counts:
-            f_count = f_counts[label[0]]/total_f*100
-        top_m[index] = [label[0], label[1], f_count]
+            f_prob = f_counts[label[0]]/total_f*100
+
+        chi2, p = chisquare([label[1], f_prob])
+        top_m[index] = [label[0], label[1], f_prob, chi2]
+
+    # Get the top 25 labels by chi2 where occurrence is higher than expected for that gender
+    top_f = [f for f in sorted(top_f, key=lambda item: item[3]) if f[1] > f[2]][-25:]
+    top_m = [m for m in sorted(top_m, key=lambda item: item[3]) if m[1] > m[2]][-25:]
+
+    top_f = sorted(top_f, key=lambda item: item[1])
+    top_m = sorted(top_m, key=lambda item: item[1])
 
     fig, ax = plt.subplots()
     x = np.arange(len(top_f))
@@ -123,8 +136,8 @@ def get_top_labels():
     fig, ax = plt.subplots()
     x = np.arange(len(top_m))
     width = 0.35
-    rects1 = ax.barh(x - width / 2, [r[1] for r in top_m], width, label='Women')
-    rects2 = ax.barh(x + width / 2, [r[2] for r in top_m], width, label='Men')
+    rects1 = ax.barh(x - width / 2, [r[2] for r in top_m], width, label='Women')
+    rects2 = ax.barh(x + width / 2, [r[1] for r in top_m], width, label='Men')
     ax.set_xlabel('% receiving each label')
     ax.set_title('Top labels for images of men')
     ax.set_yticks(x)
