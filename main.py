@@ -8,7 +8,7 @@ from scipy.stats import chisquare
 import unidecode  # Needs to be installed first (pip install unidecode)
 from google.cloud import vision
 
-def get_labels(image_fpath):
+def _get_labels(image_fpath):
     with io.open(image_fpath, 'rb') as image_file:
         content = image_file.read()
 
@@ -27,6 +27,7 @@ def get_labels(image_fpath):
 
     return response.label_annotations
 
+# Part 4A
 def get_congress_labels():
     image_folder = "mc_images/"
     all_labels = []
@@ -34,7 +35,7 @@ def get_congress_labels():
         tsv_writer = csv.writer(out_file, delimiter='\t')
         tsv_writer.writerow(["wiki_img_url", "wiki_img_labels", "wiki_img_labelsconf"])
         for f in os.listdir(image_folder):
-            labels = get_labels(image_folder + f)
+            labels = _get_labels(image_folder + f)
             # print(labels)
 
             descriptions = []
@@ -51,7 +52,7 @@ def get_congress_labels():
     print(all_labels_flat)
 
 # helper function for mapping individuals to genders (used in 4B and 4C)
-def get_genders():
+def _get_genders():
     gender_dict = {}
     with open('mc_data.tsv', 'rt') as in_file:
         tsv_reader = csv.reader(in_file, delimiter='\t')
@@ -64,7 +65,7 @@ def get_genders():
 
 # Part 4B
 def get_top_labels():               
-    gender_dict = get_genders()
+    gender_dict = _get_genders()
     print(gender_dict)
 
     f_counts = {}
@@ -154,7 +155,7 @@ def get_category_means():
             labels_cats[row[0].strip()] = row[1]
 
     # determine who is which gender
-    gender_dict = get_genders()
+    gender_dict = _get_genders()
 
     # get total counts for each category, then can just divide by the number of people
     m_counts = {} 
@@ -193,12 +194,8 @@ def get_category_means():
         print("Female: " + str(mean_f_counts))
 
 
-
-
-
-
 if __name__ == '__main__':
-    #get_congress_labels()
-    get_top_labels()
-    # get_category_means()
+    get_congress_labels() # Creates mc_data_replicated.tsv (part 4A)
+    get_top_labels() # Creates graphs showing gendered labels (part 4B)
+    get_category_means() # Calculates mean label counts (part 4C)
 
